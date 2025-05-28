@@ -1,86 +1,118 @@
-let todos = [
-    { id: 1, text: "PEE EXAM", completed: false },
-    { id: 2, text: "FINAL PROJECT MAJOR", completed: false },
-    { id: 3, text: "FILM PEE", completed: false },
-    { id: 4, text: "VLOGGING TCW", completed: false },
-    { id: 5, text: "GRIND GENSIN", completed: false },
-    { id: 6, text: "COMPILE NOTES TCW", completed: false },
-    { id: 7, text: "MAKE NEW FOODS", completed: false }
+let tasks = [
+    { id: 1, title: "PEE EXAM", description: "Prepare and take the PEE examination", status: "todo" },
+    { id: 2, title: "FINAL PROJECT MAJOR", description: "Complete the major final project submission", status: "todo" },
+    { id: 3, title: "FILM PEE", description: "Work on PEE film project", status: "todo" },
+    { id: 4, title: "VLOGGING TCW", description: "Create and edit TCW vlogging content", status: "todo" }
 ];
-let nextId = 10;
 
-const todoInput = document.getElementById('todoInput');
-const addBtn = document.getElementById('addBtn');
-const todoList = document.getElementById('todoList');
-const emptyState = document.getElementById('emptyState');
-const totalTasks = document.getElementById('totalTasks');
-const completedTasks = document.getElementById('completedTasks');
+let nextId = 99;
 
-function addTodo() {
-    const text = todoInput.value.trim();
-    if (text === '') return;
+const newTaskInput = document.getElementById('new-task-input');
+const addTaskBtn = document.getElementById('add-task-btn');
 
-    const todo = {
+function addTask() {
+    const title = newTaskInput.value.trim();
+    if (title === '') return;
+
+    const task = {
         id: nextId++,
-        text: text,
-        completed: false
+        title: title,
+        description: `Task: ${title}`,
+        status: 'todo'
     };
 
-    todos.push(todo);
-    todoInput.value = '';
-    renderTodos();
+    tasks.push(task);
+    newTaskInput.value = '';
+    renderTasks();
 }
 
-function deleteTodo(id) {
-    todos = todos.filter(todo => todo.id !== id);
-    renderTodos();
+function deleteTask(id) {
+    tasks = tasks.filter(task => task.id !== id);
+    renderTasks();
 }
 
-function toggleTodo(id) {
-    todos = todos.map(todo => 
-        todo.id === id 
-            ? { ...todo, completed: !todo.completed }
-            : todo
+function moveTask(id, newStatus) {
+    tasks = tasks.map(task => 
+        task.id === id ? { ...task, status: newStatus } : task
     );
-    renderTodos();
+    renderTasks();
 }
 
-function renderTodos() {
-    if (todos.length === 0) {
-        todoList.innerHTML = '';
-        emptyState.style.display = 'block';
-    } else {
-        emptyState.style.display = 'none';
-        todoList.innerHTML = todos.map(todo => `
-            <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                <input 
-                    type="checkbox" 
-                    class="todo-checkbox" 
-                    ${todo.completed ? 'checked' : ''}
-                    onchange="toggleTodo(${todo.id})"
-                >
-                <span class="todo-text">${todo.text}</span>
-                <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
+function getNextStatus(currentStatus) {
+    if (currentStatus === 'todo') return 'progress';
+    if (currentStatus === 'progress') return 'done';
+    return 'todo';
+}
+
+function getStatusLabel(status) {
+    if (status === 'todo') return 'Start';
+    if (status === 'progress') return 'Complete';
+    return 'Reset';
+}
+
+function renderTasks() {
+    const todoList = document.getElementById('todo-list');
+    const progressList = document.getElementById('progress-list');
+    const doneList = document.getElementById('done-list');
+
+    todoList.innerHTML = '';
+    progressList.innerHTML = '';
+    doneList.innerHTML = '';
+
+    const todoTasks = tasks.filter(task => task.status === 'todo');
+    const progressTasks = tasks.filter(task => task.status === 'progress');
+    const doneTasks = tasks.filter(task => task.status === 'done');
+
+    renderTasksInColumn(todoTasks, todoList);
+    renderTasksInColumn(progressTasks, progressList);
+    renderTasksInColumn(doneTasks, doneList);
+
+    document.getElementById('todo-count').textContent = todoTasks.length;
+    document.getElementById('progress-count').textContent = progressTasks.length;
+    document.getElementById('done-count').textContent = doneTasks.length;
+
+    showEmptyStateIfNeeded(todoList, 'No tasks yet');
+    showEmptyStateIfNeeded(progressList, 'No tasks in progress');
+    showEmptyStateIfNeeded(doneList, 'No completed tasks');
+}
+
+function renderTasksInColumn(taskList, container) {
+    taskList.forEach(task => {
+        const taskCard = document.createElement('div');
+        taskCard.className = `task-card ${task.status}`;
+        
+        taskCard.innerHTML = `
+            <div class="task-title">${task.title}</div>
+            <div class="task-description">${task.description}</div>
+            <div class="task-actions">
+                <button class="action-btn move-btn" onclick="moveTask(${task.id}, '${getNextStatus(task.status)}')">
+                    ${getStatusLabel(task.status)}
+                </button>
+                <button class="action-btn delete-btn" onclick="deleteTask(${task.id})">
+                    Delete
+                </button>
             </div>
-        `).join('');
+        `;
+        
+        container.appendChild(taskCard);
+    });
+}
+
+function showEmptyStateIfNeeded(container, message) {
+    if (container.children.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.textContent = message;
+        container.appendChild(emptyState);
     }
-
-    updateStats();
 }
 
-function updateStats() {
-    const total = todos.length;
-    const completed = todos.filter(todo => todo.completed).length;
-    
-    totalTasks.textContent = total;
-    completedTasks.textContent = completed;
-}
+addTaskBtn.addEventListener('click', addTask);
 
-addBtn.addEventListener('click', addTodo);
-
-todoInput.addEventListener('keypress', function(e) {
+newTaskInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        addTodo();
+        addTask();
     }
 });
-renderTodos();
+
+renderTasks();

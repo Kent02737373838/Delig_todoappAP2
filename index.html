@@ -3,29 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Todo List</title>
+    <title>Kanban Todo Board</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1> Ken's Todo List</h1>
-            <div class="input-section">
-                <input type="text" id="todoInput" placeholder="What needs to be done?">
-                <button id="addBtn">Add</button>
+    <div class="background-decoration"></div>
+    
+    <header class="app-header">
+        <h1>📋 My Task Board</h1>
+        <p>Organize your tasks with style</p>
+    </header>
+
+    <div class="board-container">
+        <div class="column" id="todo-column">
+            <div class="column-header">
+                <h2>📝 To Do</h2>
+                <span class="task-count" id="todo-count">0</span>
+            </div>
+            <div class="task-list" id="todo-list"></div>
+            <div class="add-task-section">
+                <input type="text" id="new-task-input" placeholder="Add a new task...">
+                <button id="add-task-btn">+ Add Task</button>
             </div>
         </div>
 
-        <div class="todos-section">
-            <div id="todoList"></div>
-            <div id="emptyState" class="empty-state">
-                <h3>🎉 All done!</h3>
-                <p>Add a new task to get started</p>
+        <div class="column" id="progress-column">
+            <div class="column-header">
+                <h2>⚡ In Progress</h2>
+                <span class="task-count" id="progress-count">0</span>
             </div>
+            <div class="task-list" id="progress-list"></div>
         </div>
 
-        <div class="stats" id="stats">
-            <span id="totalTasks">0</span> tasks • <span id="completedTasks">0</span> completed
+        <div class="column" id="done-column">
+            <div class="column-header">
+                <h2>✅ Done</h2>
+                <span class="task-count" id="done-count">0</span>
+            </div>
+            <div class="task-list" id="done-list"></div>
         </div>
     </div>
 
