@@ -7,7 +7,7 @@ let todos = [
     { id: 6, text: "COMPILE NOTES TCW", completed: false },
     { id: 7, text: "MAKE NEW FOODS", completed: false }
 ];
-let nextId = 5;
+let nextId = 10;
 
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
